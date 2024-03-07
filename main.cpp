@@ -94,28 +94,52 @@ int main(void)
 		perror("Error ao conectar");
 		return EXIT_FAILURE;
 	}
-
-	socklen_t client_address_length = sizeof(client_adderss);
-	int client_socket = accept(sock,(struct sockaddr *)&client_adderss,&client_address_length);
-	if(client_socket < 0)
+	int client;
+	socklen_t client_size = sizeof(client_adderss);
+	ssize_t x;
+	char buff[129] = {0};
+	while(1)
 	{
-		perror("Error ao aceitar conexao");
-		return EXIT_FAILURE;
-	}
-	char buffer[1024] = {0};
-	int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
-	if (bytes_received < 0) {
-		perror("Erro ao receber dados do cliente");
-		return EXIT_FAILURE;
-	}
-	std::cout << "Mensagem recebida do cliente: " << buffer << std::endl;
+		//leitura dos dados
+		client = accept(sock,(struct sockaddr *)&client_adderss,&client_size);
+		x = recv(client,buff,sizeof(buff),0);
+		if(x == -1)
+		{
+			std::cout << "Nao ha dados";
+			close(client);
+			return EXIT_FAILURE;
+		}
 
-	const char *mensagem = "Olá do servidor!\n";
-	int bytes_enviados = send(client_socket, mensagem, strlen(mensagem), 0);
-	if (bytes_enviados < 0) {
-		perror("Erro ao enviar dados para o cliente");
-		return EXIT_FAILURE;
+		// manda dados para o cliente
+		send(client,"Server: ",9,0);
+		send(client,buff,x,0);
+
+		//imprime no terminal os dados que recebeu do cliente
+		std::cout << "Client: " <<buff;
+		close(client);
 	}
+
+	// socklen_t client_address_length = sizeof(client_adderss);
+	// int client_socket = accept(sock,(struct sockaddr *)&client_adderss,&client_address_length);
+	// if(client_socket < 0)
+	// {
+	// 	perror("Error ao aceitar conexao");
+	// 	return EXIT_FAILURE;
+	// }
+	// char buffer[1024] = {0};
+	// int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+	// if (bytes_received < 0) {
+	// 	perror("Erro ao receber dados do cliente");
+	// 	return EXIT_FAILURE;
+	// }
+	// std::cout << "Mensagem recebida do cliente: " << buffer << std::endl;
+
+	// const char *mensagem = "Olá do servidor!\n";
+	// int bytes_enviados = send(client_socket, mensagem, strlen(mensagem), 0);
+	// if (bytes_enviados < 0) {
+	// 	perror("Erro ao enviar dados para o cliente");
+	// 	return EXIT_FAILURE;
+	// }
 
 
 	/*
