@@ -21,15 +21,6 @@ no caso vamos usar sockaddr_in para representar
 enderecos IP e portas
 */
 
-struct sockaddr_in client_adderss;
-// struct sockaddr_in server_address = {
-// 	server_address.sin_family = AF_INET, // vamos usar IPv4
-// 	server_address.sin_port = htons(8080), // vamos usar porta 8080, usamos a funcao
-// 	// htons para converter o 8080 para uma porta correta
-// 	server_address.sin_addr.s_addr = htonl(INADDR_ANY) // vai ser usado qualquer
-// 	// IP disponivel na maquina local
-// };
-
 int main(void)
 {
 	/*
@@ -74,26 +65,46 @@ int main(void)
 	*/
 
 	int reuse = 1;
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
+	{
 		perror("Erro ao definir a opção SO_REUSEADDR");
 		return EXIT_FAILURE;
 	}
 
+	/*
+		Criamos um sockaddr_in que no caso eh uma struct para guardar o tipo de IP vamos usar , o port que vai ser usado
+		e o qual o endereco de IP que o servidor vai ter
+	*/
+
 	sockaddr_in server_address = {};
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(8080); // Exemplo de porta
-    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+	server_address.sin_family = AF_INET; // vamos usar IPv4
+	server_address.sin_port = htons(8080); // vamos usar porta 8080, usamos a funcao htons para converter o 8080 para uma porta correta
+	server_address.sin_addr.s_addr = htonl(INADDR_ANY); // vai ser usado qualquer IP disponivel na maquina local
+
+	/*
+		a funcao bind() vai ser usado para associar um endereco IP , o tipo de IP e a porta a um socket
+	*/
 
 	if(bind(sock,(struct sockaddr *)&server_address,sizeof(server_address)) < 0)
 	{
 		perror("Error ao fazer bind do socket");
 		return EXIT_FAILURE;
 	}
+
+	/*
+		a funcao listen() eh usado para colocar um maximo de conexoes a um socket
+		a funcao retorna -1 caso passe o maximo de conexoes
+	*/
+
 	if(listen(sock,2) < 0)//numero maximo de conexoes eh 2 neste caso
 	{
 		perror("Error ao conectar");
 		return EXIT_FAILURE;
 	}
+
+	// Criamos um sockaddr_in para armazenar os dados do cliente 
+
+	sockaddr_in client_adderss;
 	int client;
 	socklen_t client_size = sizeof(client_adderss);
 	ssize_t x;
@@ -115,32 +126,14 @@ int main(void)
 		send(client,buff,x,0);
 
 		//imprime no terminal os dados que recebeu do cliente
-		std::cout << "Client: " <<buff;
-		close(client);
+		std::cout << "Client: " << buff;
+
+		if(close(client) == -1)
+		{
+			perror("Error ao fechar o socket do client");
+			return EXIT_FAILURE;
+		}
 	}
-
-	// socklen_t client_address_length = sizeof(client_adderss);
-	// int client_socket = accept(sock,(struct sockaddr *)&client_adderss,&client_address_length);
-	// if(client_socket < 0)
-	// {
-	// 	perror("Error ao aceitar conexao");
-	// 	return EXIT_FAILURE;
-	// }
-	// char buffer[1024] = {0};
-	// int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
-	// if (bytes_received < 0) {
-	// 	perror("Erro ao receber dados do cliente");
-	// 	return EXIT_FAILURE;
-	// }
-	// std::cout << "Mensagem recebida do cliente: " << buffer << std::endl;
-
-	// const char *mensagem = "Olá do servidor!\n";
-	// int bytes_enviados = send(client_socket, mensagem, strlen(mensagem), 0);
-	// if (bytes_enviados < 0) {
-	// 	perror("Erro ao enviar dados para o cliente");
-	// 	return EXIT_FAILURE;
-	// }
-
 
 	/*
 	Por fim igual a um open que abre arquivos temos 
@@ -148,7 +141,7 @@ int main(void)
 	*/
 	if(close(sock) == -1)
 	{
-		perror("Error ao fechar o socket");
+		perror("Error ao fechar o socket do servidor");
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;
