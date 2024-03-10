@@ -6,6 +6,9 @@
 #include <cstring>
 #include <stdio.h>
 #include <arpa/inet.h>
+#include <sstream>
+#include <fstream>
+#include <string>
 
 /*
 Apenas para estudo:
@@ -14,12 +17,29 @@ TCP - Transmission Control Protocol
 HTTP - Hypertext Transfer Protocol
 */
 
-/*
-Criamos uma struct para configurar o
-endereco do servidor ou client
-no caso vamos usar sockaddr_in para representar
-enderecos IP e portas
-*/
+
+// Uma funcao simples para copiar o conteudo do arquivo html
+std::string get_html(std::string html_arq)
+{
+	std::ifstream arquivo(html_arq.c_str());
+	std::string conteudo_html;
+	std::string linha;
+
+	if (arquivo.is_open())
+	{
+		while (std::getline(arquivo, linha))
+			conteudo_html += linha;
+		arquivo.close();
+	}
+	else
+	{
+		// Se não foi possível abrir o arquivo, exibir uma mensagem de erro
+		std::cerr << "Erro ao abrir o arquivo HTML: " << html_arq << std::endl;
+		conteudo_html = "<!DOCTYPE html><html><body><h1>Error 500!</h1></body></html>";
+	}
+
+	return conteudo_html; // Retornando o conteúdo do arquivo HTML em uma string
+}
 
 int main(void)
 {
@@ -72,8 +92,10 @@ int main(void)
 	}
 
 	/*
-		Criamos um sockaddr_in que no caso eh uma struct para guardar o tipo de IP vamos usar , o port que vai ser usado
-		e o qual o endereco de IP que o servidor vai ter
+		Criamos uma struct para configurar o
+		endereco do servidor ou client
+		no caso vamos usar sockaddr_in para representar
+		enderecos IP e portas
 	*/
 
 	sockaddr_in server_address = {};
@@ -104,8 +126,8 @@ int main(void)
 
 	// Criamos um sockaddr_in para armazenar os dados do cliente 
 
-	sockaddr_in client_adderss;
 	int client;
+	sockaddr_in client_adderss;
 	socklen_t client_size = sizeof(client_adderss);
 	ssize_t x;
 	char buff[129] = {0};
@@ -114,6 +136,7 @@ int main(void)
 		//leitura dos dados
 		client = accept(sock,(struct sockaddr *)&client_adderss,&client_size);
 		x = recv(client,buff,sizeof(buff),0);
+		std::string response = get_html("filesHtml/teste.html");
 		if(x == -1)
 		{
 			std::cout << "Nao ha dados";
@@ -122,10 +145,33 @@ int main(void)
 		}
 
 		// manda dados para o cliente
-		send(client,"Server: ",9,0);
-		send(client,buff,x,0);
+		/*
+			Usamos o stringstream para passar de int para string
+			e fazer 
+		*/
+		std::stringstream ss;
+		ss << response.length();
+		std::string str = ss.str();
+
+		/*
+			Temos que criar um header para dizer para o client o que ele vai receber
+			no caso vai ser uma conexao HTTP/1.1 
+			200 quer dizer que deu para conectar
+
+			Tipo de texto vai ser html
+			e depois o tamanho do texto
+
+			depois de mandar o header mandamos o html para o cliente
+		*/
+
+		std::string header = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + str + "\n\n";
+		send(client,header.c_str(),header.length(),0);
+		send(client,response.c_str(),response.length(),0);
+		// send(client,"<!DOCTYPE html><html><body><h1>Servidor HTTP em C++</h1></body></html>",71,0);
+		// send(client,buff,x,0);
 
 		//imprime no terminal os dados que recebeu do cliente
+		// Vai ser impreso no servidor para debuff
 		std::cout << "Client: " << buff;
 
 		if(close(client) == -1)
