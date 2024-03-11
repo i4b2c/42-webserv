@@ -5,7 +5,9 @@ NAME=webserv
 CXX=c++
 
 # ARQUIVOS
-SRCS= main.cpp
+SRCS=	main.cpp \
+		utils.cpp \
+		Server.cpp
 
 OBJS=$(SRCS:.cpp=.o)
 
