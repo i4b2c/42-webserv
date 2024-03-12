@@ -72,7 +72,6 @@ void webServ::starting(void)
 		}
 		else if (pfd.revents & POLLIN)
 		{
-			std::cout << "nova conexao " << idx << std::endl;
 			this->addClient(idx);
 			this->client.at(this->client.size() - 1).connect(this->server.at(this->id).getSocket());
 			idx++;
