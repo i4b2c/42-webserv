@@ -2,7 +2,7 @@
 
 int main(void)
 {
-	webServ server;
+	webServ server("default.conf");
 	server.addServer();
 	server.starting();
 }

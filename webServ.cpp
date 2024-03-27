@@ -2,6 +2,9 @@
 #include "utils.hpp"
 #include <csignal>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <string>
 #include <sys/poll.h>
 
 #define DOMAIN_DEFAULT AF_INET
@@ -18,12 +21,44 @@ static void closeServer(int signum)
 	exit(EXIT_SUCCESS);
 }
 
-webServ::webServ()
-: server()
+// por enquanto fica neste ficheiro
+void cleanSpaces(std::string &arg) {
+	std::string result;
+	for (size_t i = 0; i < arg.length(); ++i) {
+		if (arg[i] != ' ' && arg[i] != '\t' && arg[i] != ';') {
+			result += arg[i];
+		}
+	}
+	arg = result;
+}
+
+void webServ::configServerFile(std::string conf_file)
+{
+	std::ifstream arq(conf_file.c_str());
+	if(!arq.is_open())
+	{
+		std::cerr << "Error" << std::endl;
+		return ;
+	}
+	std::string line_temp;
+	std::string conf_file_complete;
+	while(std::getline(arq,line_temp))
+	{
+		cleanSpaces(line_temp);
+		if(line_temp.substr(0,6) == "listen")
+			this->params["listen"] = line_temp.substr(6,line_temp.length());
+		conf_file_complete += line_temp;
+		conf_file_complete += "\n";
+	}
+}
+
+webServ::webServ(std::string conf_file)
+: server(), params()
 {
 	signal(SIGPIPE,SIG_IGN);
 	signal(SIGINT, closeServer);
 	printAtTerminal("Starting Server...");
+	this->configServerFile(conf_file);
 }
 
 webServ::~webServ()
@@ -34,7 +69,7 @@ webServ::~webServ()
 void webServ::addServer()
 {
 	static int idx = 0;
-	Server serverTemp(AF_INET,8085,INADDR_ANY,SOCK_STREAM,0);
+	Server serverTemp(AF_INET,atoi(this->params["listen"].c_str()),INADDR_ANY,SOCK_STREAM,0);
 	this->server.push_back(serverTemp);
 	this->id = idx;
 	idx++;

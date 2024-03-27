@@ -14,7 +14,7 @@ Server::Server(int domain, int port, u_long interface, int service, int protocol
 	int reuse = -1;
 	if (setsockopt(this->socket_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
 	{
-		perror("Erro: ");
+		perror("Error");
 		exit(EXIT_FAILURE);
 	}
 
@@ -34,7 +34,7 @@ void Server::testConnection(int fd)
 {
 	if(fd < 0)
 	{
-		perror("Error: ");
+		perror("Error");
 		exit(EXIT_FAILURE);
 	}
 }

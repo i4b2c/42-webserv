@@ -22,7 +22,7 @@ void Client::connect(int socket)
 	std::cout << buffer << std::endl;
 
 	// Apenas para mostrar alguma coisa no client
-	write(this->client,"HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1234\n\n",63);
-	write(this->client,"<!DOCTYPE html><html><head><meta charset='UTF-8'/><title>Document</title></head><body><!-- Conteúdo --></body></html>\n",120);
+	// write(this->client,"HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1234\n\n",63);
+	// write(this->client,"<!DOCTYPE html><html><head><meta charset='UTF-8'/><title>Document</title></head><body><!-- Conteúdo --></body></html>\n",120);
 	close(this->client);
 }
