@@ -22,6 +22,7 @@ int main(int ac, char **av)
 		confFile conf_file(av[1]);
 		std::cout << conf_file << std::endl;
 	}
+	return EXIT_SUCCESS;
 	/*
 		Primeira coisa que vai fazer eh ler o conf file
 	*/

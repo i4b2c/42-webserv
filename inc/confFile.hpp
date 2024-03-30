@@ -14,9 +14,13 @@ class confFile
 {
 	private:
 		int _port;
+		std::string _server_name;
 	public:
 		void init(std::string const arg);
+
 		int getPort() const;
+		std::string getServerName() const;
+		
 		confFile(std::string const arg);
 		~confFile();
 };
