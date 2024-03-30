@@ -5,5 +5,6 @@
 #include <iostream>
 
 void printAtTerminal(std::string const arg);
+void cleanSpaces(std::string &arg);
 
 #endif

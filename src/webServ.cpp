@@ -21,17 +21,6 @@ static void closeServer(int signum)
 	exit(EXIT_SUCCESS);
 }
 
-// por enquanto fica neste ficheiro
-void cleanSpaces(std::string &arg) {
-	std::string result;
-	for (size_t i = 0; i < arg.length(); ++i) {
-		if (arg[i] != ' ' && arg[i] != '\t' && arg[i] != ';') {
-			result += arg[i];
-		}
-	}
-	arg = result;
-}
-
 void webServ::configServerFile(std::string conf_file)
 {
 	std::ifstream arq(conf_file.c_str());
