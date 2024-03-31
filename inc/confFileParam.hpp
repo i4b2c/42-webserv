@@ -8,11 +8,13 @@ class confFileParam
 	private:
 		int _port;
 		std::string _server_name;
+		struct sockaddr_in _server_address;
 	public:
 		confFileParam();
 		~confFileParam();
 		void setPort(int);
 		void setServerName(std::string);
+		void setHost(uint32_t);
 		int getPort() const;
 		std::string getServerName() const;
 };

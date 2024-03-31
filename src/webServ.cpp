@@ -14,34 +14,44 @@ static void closeServer(int signum)
 	exit(EXIT_SUCCESS);
 }
 
-void webServ::configServerFile(confFile conf_file)
+void webServ::configServerFile(confFile & conf_file)
 {
 	std::vector<std::string>::iterator it,itn;
 	it = conf_file.begin();
 	itn = conf_file.end();
 	while(it != itn)
 	{
-		if((*it).find("server{") != std::string::npos)
+		if((*it).find("server") != std::string::npos)
 		{
 			++it;
 			if((*it).empty())
 				error("Invalid config file");
+			confFileParam conf_file_param_temp;
 			while((*it).find("}") == std::string::npos)
 			{
-				confFileParam conf_file_param_temp;
 				if((*it).find("listen") != std::string::npos)
-					conf_file_param_temp.setPort((atoi((*it).substr(8,(*it).length() - 9).c_str())));
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setPort((atoi((*it).substr(6,(*it).length() - 1).c_str())));
+				}
 				else if((*it).find("server_name") != std::string::npos)
-					conf_file_param_temp.setServerName((*it).substr(12,(*it).length() - 1));
-				++it;
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setServerName((*it).substr(11,(*it).length() - 1));
+				}
+				else if((*it).find("host") != std::string::npos)
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setHost(ipToBinary((*it).substr(4,(*it).length() - 1)));
+				}
 				if((*it).find("}") != std::string::npos)
 				{
 					this->confFileParams.push_back(conf_file_param_temp);
 					break;
 				}
+				++it;
 			}
 		}
-		// std::cout << *it << std::endl;
 		++it;
 	}
 }

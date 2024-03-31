@@ -1,7 +1,7 @@
 #include "webLib.hpp"
 
 confFileParam::confFileParam()
-: _server_name("") {};
+: _port(0), _server_name("") {};
 
 confFileParam::~confFileParam() {};
 
@@ -23,6 +23,11 @@ int confFileParam::getPort() const
 std::string confFileParam::getServerName() const
 {
 	return this->_server_name;
+}
+
+void confFileParam::setHost(uint32_t host)
+{
+	this->_server_address.sin_addr.s_addr = htonl(host);
 }
 
 std::ostream &operator<<(std::ostream &stream,confFileParam & arg)

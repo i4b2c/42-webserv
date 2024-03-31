@@ -22,7 +22,7 @@ class webServ
 		// void addServer(int domain, int port, u_long interface, int service, int protocol);
 		// void addClient(int idx);
 		// void starting(void);
-		void configServerFile(confFile);
+		void configServerFile(confFile & arg);
 		void printConfFiles();
 };
 
