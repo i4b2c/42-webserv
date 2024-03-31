@@ -44,12 +44,12 @@ void webServ::configServerFile(confFile & conf_file)
 					cleanSpaces(*it);
 					conf_file_param_temp.setHost(ipToBinary((*it).substr(4,(*it).length() - 1)));
 				}
+				++it;
 				if((*it).find("}") != std::string::npos)
 				{
 					this->confFileParams.push_back(conf_file_param_temp);
 					break;
 				}
-				++it;
 			}
 		}
 		++it;

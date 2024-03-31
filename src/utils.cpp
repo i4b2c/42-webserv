@@ -61,3 +61,17 @@ uint32_t ipToBinary(std::string const ip_address)
 	}
 	return binary_num;
 }
+
+std::string binaryToIp(uint32_t binary_num)
+{
+    std::string ip_address;
+    std::stringstream ss;
+    for (int i = 3; i >= 0; --i)
+	{
+        uint32_t octet = (binary_num >> (8 * (3 - i))) & 255;
+        ss << octet;
+        if (i > 0) ss << ".";
+    }
+    ip_address = ss.str();
+    return ip_address;
+}

@@ -16,6 +16,7 @@ class confFileParam
 		void setServerName(std::string);
 		void setHost(uint32_t);
 		int getPort() const;
+		uint32_t getHost() const;
 		std::string getServerName() const;
 };
 
