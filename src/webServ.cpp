@@ -1,11 +1,4 @@
-#include "webServ.hpp"
-#include "utils.hpp"
-#include <csignal>
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/poll.h>
+#include "webLib.hpp"
 
 #define DOMAIN_DEFAULT AF_INET
 #define TYPE_DEFAULT SOCK_STREAM
@@ -21,87 +14,113 @@ static void closeServer(int signum)
 	exit(EXIT_SUCCESS);
 }
 
-void webServ::configServerFile(std::string conf_file)
+void webServ::configServerFile(confFile conf_file)
 {
-	std::ifstream arq(conf_file.c_str());
-	if(!arq.is_open())
+	std::vector<std::string>::iterator it,itn;
+	it = conf_file.begin();
+	itn = conf_file.end();
+	while(it != itn)
 	{
-		std::cerr << "Error" << std::endl;
-		return ;
-	}
-	std::string line_temp;
-	std::string conf_file_complete;
-	while(std::getline(arq,line_temp))
-	{
-		cleanSpaces(line_temp);
-		if(line_temp.substr(0,6) == "listen")
-			this->params["listen"] = line_temp.substr(6,line_temp.length());
-		conf_file_complete += line_temp;
-		conf_file_complete += "\n";
+		if((*it).find("server{") != std::string::npos)
+		{
+			++it;
+			if((*it).empty())
+				error("Invalid config file");
+			while((*it).find("}") == std::string::npos)
+			{
+				confFileParam conf_file_param_temp;
+				if((*it).find("listen") != std::string::npos)
+					conf_file_param_temp.setPort((atoi((*it).substr(8,(*it).length() - 9).c_str())));
+				else if((*it).find("server_name") != std::string::npos)
+					conf_file_param_temp.setServerName((*it).substr(12,(*it).length() - 1));
+				++it;
+				if((*it).find("}") != std::string::npos)
+				{
+					this->confFileParams.push_back(conf_file_param_temp);
+					break;
+				}
+			}
+		}
+		// std::cout << *it << std::endl;
+		++it;
 	}
 }
 
-webServ::webServ(std::string conf_file)
-: server(), params()
+void webServ::printConfFiles()
+{
+	for(std::vector<confFileParam>::iterator it = this->confFileParams.begin(); it != this->confFileParams.end();++it)
+	{
+		std::cout << *it << std::endl;
+	}
+}
+
+webServ::webServ()
+: servers(),clients(), confFileParams()
 {
 	signal(SIGPIPE,SIG_IGN);
 	signal(SIGINT, closeServer);
 	printAtTerminal("Starting Server...");
-	this->configServerFile(conf_file);
 }
+
+
+// webServ::webServ()
+// : server(),client(),confFile(),params()
+// {
+// 	this->getConfFile("conf/default.conf");
+// }
 
 webServ::~webServ()
 {
 	printAtTerminal("Closing Server...");
 }
 
-void webServ::addServer()
-{
-	static int idx = 0;
-	Server serverTemp(AF_INET,atoi(this->params["listen"].c_str()),INADDR_ANY,SOCK_STREAM,0);
-	this->server.push_back(serverTemp);
-	this->id = idx;
-	idx++;
-}
+// void webServ::addServer()
+// {
+// 	static int idx = 0;
+// 	Server serverTemp(AF_INET,atoi(this->params["listen"].c_str()),INADDR_ANY,SOCK_STREAM,0);
+// 	this->server.push_back(serverTemp);
+// 	this->id = idx;
+// 	idx++;
+// }
 
-void webServ::addServer(int domain, int port, u_long interface, int service, int protocol)
-{
-	Server serverTemp(domain,port,interface,service,protocol);
-	this->server.push_back(serverTemp);
-}
+// void webServ::addServer(int domain, int port, u_long interface, int service, int protocol)
+// {
+// 	Server serverTemp(domain,port,interface,service,protocol);
+// 	this->server.push_back(serverTemp);
+// }
 
-void webServ::addClient(int idx)
-{
-	Client clientTemp(idx);
-	this->client.push_back(clientTemp);
-}
+// void webServ::addClient(int idx)
+// {
+// 	Client clientTemp(idx);
+// 	this->client.push_back(clientTemp);
+// }
 
-void webServ::starting(void)
-{
-	struct pollfd pfd;
-	pfd.fd = this->server.at(this->id).getSocket();
-	pfd.events = POLLIN;
+// void webServ::starting(void)
+// {
+// 	struct pollfd pfd;
+// 	pfd.fd = this->server.at(this->id).getSocket();
+// 	pfd.events = POLLIN;
 
-	int idx = 0;
-	while (!g_closeServer)
-	{
-		int poll_ret = poll(&pfd, 1, -1);
-		if (poll_ret < 0)
-		{
-			return;
-		}
-		else if (poll_ret == 0)
-		{
-			continue;
-		}
-		else if (pfd.revents & POLLIN)
-		{
-			this->addClient(idx);
-			this->client.at(this->client.size() - 1).connect(this->server.at(this->id).getSocket());
-			idx++;
-		}
-		else
-		{
-		}
-	}
-}
+// 	int idx = 0;
+// 	while (!g_closeServer)
+// 	{
+// 		int poll_ret = poll(&pfd, 1, -1);
+// 		if (poll_ret < 0)
+// 		{
+// 			return;
+// 		}
+// 		else if (poll_ret == 0)
+// 		{
+// 			continue;
+// 		}
+// 		else if (pfd.revents & POLLIN)
+// 		{
+// 			this->addClient(idx);
+// 			this->client.at(this->client.size() - 1).connect(this->server.at(this->id).getSocket());
+// 			idx++;
+// 		}
+// 		else
+// 		{
+// 		}
+// 	}
+// }

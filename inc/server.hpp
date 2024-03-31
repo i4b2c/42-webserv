@@ -1,10 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <stdio.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <cstdlib>
+#include "webLib.hpp"
 
 class Server
 {

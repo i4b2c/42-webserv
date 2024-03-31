@@ -1,30 +1,22 @@
 #ifndef CONFFILE_HPP
 #define CONFFILE_HPP
 
-#include <string>
-#include <iostream>
-#include <csignal>
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sys/poll.h>
+#include "webLib.hpp"
 
 class confFile
 {
 	private:
-		int _port;
-		std::string _server_name;
+		std::vector<std::string> _content;
+		std::string 			_path;
+		size_t 					_size;
 	public:
-		void init(std::string const arg);
-
-		int getPort() const;
+		void init();
 		std::string getServerName() const;
-		
+		std::vector<std::string>::iterator begin();
+		std::vector<std::string>::iterator end();
+
 		confFile(std::string const arg);
 		~confFile();
 };
-
-std::ostream &operator<<(std::ostream & stream, confFile & file);
 
 #endif

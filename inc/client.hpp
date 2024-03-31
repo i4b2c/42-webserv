@@ -1,12 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include <stdio.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <cstdlib>
-#include <unistd.h>
-#include <iostream>
+#include "webLib.hpp"
 
 class Client
 {

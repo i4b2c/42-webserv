@@ -17,3 +17,9 @@ void cleanSpaces(std::string &arg)
 	}
 	arg = result;
 }
+
+void error(std::string const arg)
+{
+	std::cerr << "Error: " << arg << std::endl;
+	exit(EXIT_FAILURE);
+}

@@ -8,7 +8,8 @@ SRCS=	src/main.cpp \
 		src/utils.cpp \
 		src/webServ.cpp \
 		src/client.cpp \
-		src/confFile.cpp
+		src/confFile.cpp \
+		src/confFileParam.cpp
 
 OBJS= $(SRCS:%.cpp=%.o) 
 
