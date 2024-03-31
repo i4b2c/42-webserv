@@ -44,6 +44,16 @@ void webServ::configServerFile(confFile & conf_file)
 					cleanSpaces(*it);
 					conf_file_param_temp.setHost(ipToBinary((*it).substr(4,(*it).length() - 1)));
 				}
+				else if((*it).find("error_page") != std::string::npos)
+				{
+					std::vector<std::string> error_pages_temp = splitString(*it,' ');
+					conf_file_param_temp.setErrorPages(error_pages_temp);
+				}
+				else if((*it).find("client_max_body_size") != std::string::npos)
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setClientMaxBodySize(atoi((*it).substr(20,(*it).length() - 1).c_str()));
+				}
 				++it;
 				if((*it).find("}") != std::string::npos)
 				{
