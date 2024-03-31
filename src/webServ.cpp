@@ -54,6 +54,21 @@ void webServ::configServerFile(confFile & conf_file)
 					cleanSpaces(*it);
 					conf_file_param_temp.setClientMaxBodySize(atoi((*it).substr(20,(*it).length() - 1).c_str()));
 				}
+				else if((*it).find("root") != std::string::npos)
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setRoot((*it).substr(4,(*it).length() - 1));
+				}
+				else if((*it).find("auto_index") != std::string::npos)
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setAutoIndex((*it).substr(10,(*it).length() - 1));
+				}
+				else if((*it).find("index") != std::string::npos)
+				{
+					cleanSpaces(*it);
+					conf_file_param_temp.setIndex((*it).substr(5,(*it).length() - 1));
+				}
 				++it;
 				if((*it).find("}") != std::string::npos)
 				{

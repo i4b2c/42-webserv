@@ -1,7 +1,7 @@
 #include "webLib.hpp"
 
 confFileParam::confFileParam()
-: _port(0), _client_max_body_size(0),_server_name(""), _error_pages(),_server_address() {};
+: _port(0),_host(0),_server_name(""),_root(""),_index(""),_auto_index(false),_client_max_body_size(0), _error_pages(),_server_address() {};
 
 confFileParam::~confFileParam() {};
 
@@ -25,14 +25,48 @@ uint32_t confFileParam::getHost() const
 	return this->_server_address.sin_addr.s_addr;
 }
 
+std::string confFileParam::getRoot() const
+{
+	return this->_root;
+}
+
 std::string confFileParam::getServerName() const
 {
 	return this->_server_name;
 }
 
+std::string confFileParam::getIndex() const
+{
+	return this->_index;
+}
+
+bool confFileParam::getAutoIndex() const
+{
+	return this->_auto_index;
+}
+
 void confFileParam::setHost(uint32_t host)
 {
 	this->_server_address.sin_addr.s_addr = htonl(host);
+	this->_host = htonl(host);
+}
+
+void confFileParam::setRoot(std::string root)
+{
+	this->_root = root;
+}
+
+void confFileParam::setIndex(std::string index)
+{
+	this->_index = index;
+}
+
+void confFileParam::setAutoIndex(std::string auto_index)
+{
+	if(auto_index == "on")
+		this->_auto_index = true;
+	else
+		this->_auto_index = false;
 }
 
 void confFileParam::setErrorPages(std::vector<std::string> error_pages_temp)
@@ -79,6 +113,12 @@ std::ostream &operator<<(std::ostream &stream,confFileParam & arg)
 			++it;
 		}
 	}
+	stream << "Index: " << arg.getIndex() << std::endl;
+	if(arg.getAutoIndex() == true)
+		stream << "Auto Index: on" << std::endl;
+	else
+		stream << "Auto Index: off" << std::endl;
+	stream << "Root: " << arg.getRoot() << std::endl;
 	stream << "Client Max Body Size: " << arg.getClientMaxBodySize() << std::endl;
 	return stream;
 }
