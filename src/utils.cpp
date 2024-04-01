@@ -76,31 +76,21 @@ std::string binaryToIp(uint32_t binary_num)
     return ip_address;
 }
 
-std::vector<std::string> splitString(const std::string& input, char delimiter) {
-    std::vector<std::string> tokens;
-    size_t startPos = 0;
+std::vector<std::string> splitString(const std::string& input, char delimiter)
+{
+    std::vector<std::string> buffer;
+    size_t start_pos = 0;
     
-    // Enquanto houver delimitadores na string
-    while (startPos != std::string::npos) {
-        // Encontrar a posição do próximo delimitador a partir da posição inicial
-        size_t endPos = input.find(delimiter, startPos);
-
-        // Se não encontrarmos outro delimitador, pegamos o restante da string
-        if (endPos == std::string::npos) {
+    while (start_pos != std::string::npos)
+	{
+        size_t endPos = input.find(delimiter, start_pos);
+        if (endPos == std::string::npos)
             endPos = input.size();
-        }
-        
-        // Adicionamos a substring delimitada ao vetor de tokens
-        tokens.push_back(input.substr(startPos, endPos - startPos));
-        
-        // Atualizamos a posição inicial para o próximo caractere após o delimitador
-        startPos = input.find_first_not_of(delimiter, endPos);
-
-        // Se não houver mais caracteres após o último delimitador, saímos do loop
-        if (startPos == std::string::npos) {
+        buffer.push_back(input.substr(start_pos, endPos - start_pos));
+        start_pos = input.find_first_not_of(delimiter, endPos);
+        if (start_pos == std::string::npos)
             break;
-        }
     }
 
-    return tokens;
+    return buffer;
 }
