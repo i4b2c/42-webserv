@@ -6,14 +6,14 @@
 class confFile;
 class Server;
 class Client;
-class confFileParam;
+class confServer;
 
 class webServ
 {
 	private:
-		std::vector<Server> servers;
-		std::vector<Client> clients;
-		std::vector<confFileParam> confFileParams;
+		std::vector<Server> _servers;
+		std::vector<Client> _clients;
+		std::vector<confServer> _conf_server;
 		// std::map<std::string,std::string> params;
 	public:
 		webServ();

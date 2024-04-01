@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <string.h>
 
 /*
 	my own headers
@@ -29,7 +30,7 @@
 #include "server.hpp"
 #include "client.hpp"
 #include "confFile.hpp"
-#include "confFileParam.hpp"
+#include "confServer.hpp"
 #include "utils.hpp"
 #include "location.hpp"
 

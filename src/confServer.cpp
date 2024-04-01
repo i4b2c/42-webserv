@@ -6,10 +6,14 @@
 	+----------------------------+
 */
 
-confFileParam::confFileParam()
-: _port(0),_host(0),_server_name(""),_root(""),_index(""),_auto_index(false),_client_max_body_size(0), _error_pages(),_server_address(),_location() {};
+confServer::confServer()
+: _socket_fd(0),_port(0),_host(0),_server_name(""),_root(""),_index(""),_auto_index(false),_client_max_body_size(0), _error_pages(),_server_address(),_location() {};
 
-confFileParam::~confFileParam() {};
+confServer::~confServer()
+{
+	if(!this->_socket_fd)
+		close(this->_socket_fd);
+}
 
 /*
 	+---------------+
@@ -17,33 +21,32 @@ confFileParam::~confFileParam() {};
 	+---------------+
 */
 
-void confFileParam::setPort(int port_temp)
+void confServer::setPort(int port_temp)
 {
 	this->_port = port_temp;
 }
 
-void confFileParam::setServerName(std::string server_name_temp)
+void confServer::setServerName(std::string server_name_temp)
 {
 	this->_server_name = server_name_temp;
 }
 
-void confFileParam::setHost(uint32_t host)
+void confServer::setHost(uint32_t host)
 {
-	this->_server_address.sin_addr.s_addr = htonl(host);
 	this->_host = htonl(host);
 }
 
-void confFileParam::setRoot(std::string root)
+void confServer::setRoot(std::string root)
 {
 	this->_root = root;
 }
 
-void confFileParam::setIndex(std::string index)
+void confServer::setIndex(std::string index)
 {
 	this->_index = index;
 }
 
-void confFileParam::setAutoIndex(std::string auto_index)
+void confServer::setAutoIndex(std::string auto_index)
 {
 	if(auto_index == "on")
 		this->_auto_index = true;
@@ -51,7 +54,7 @@ void confFileParam::setAutoIndex(std::string auto_index)
 		this->_auto_index = false;
 }
 
-void confFileParam::setErrorPages(std::vector<std::string> error_pages_temp)
+void confServer::setErrorPages(std::vector<std::string> error_pages_temp)
 {
     std::vector<std::string>::iterator it = error_pages_temp.begin();
     ++it;
@@ -61,14 +64,32 @@ void confFileParam::setErrorPages(std::vector<std::string> error_pages_temp)
 	this->_error_pages[atoi((*it).c_str())] = (*next_it).substr(0,(*next_it).length() - 1);
 }
 
-void confFileParam::setClientMaxBodySize(int num)
+void confServer::setClientMaxBodySize(int num)
 {
 	this->_client_max_body_size = num;
 }
 
-void confFileParam::setLocation(Location location_temp)
+void confServer::setLocation(Location location_temp)
 {
 	this->_location.push_back(location_temp);
+}
+
+void confServer::setSocket()
+{
+	if((this->_socket_fd = socket(AF_INET,SOCK_STREAM,0)) == -1)
+	{
+		exit(EXIT_FAILURE);
+	}
+	int option_value = 0;
+	setsockopt(this->_socket_fd,SOL_SOCKET,SO_REUSEADDR,&option_value,sizeof(int));
+	memset(&this->_server_address,0,sizeof(this->_server_address));
+	this->_server_address.sin_family = AF_INET;
+	this->_server_address.sin_port = htons(this->_port);
+	this->_server_address.sin_addr.s_addr = this->_host;
+	// if(bind(this->_socket_fd,(struct sockaddr *) &(this->_server_address),sizeof(this->_server_address)) == -1)
+	// {
+	// 	exit(EXIT_FAILURE);
+	// }
 }
 
 /*
@@ -77,49 +98,54 @@ void confFileParam::setLocation(Location location_temp)
 	+---------------+
 */
 
-int confFileParam::getPort() const
+int confServer::getPort() const
 {
 	return this->_port;
 }
 
-uint32_t confFileParam::getHost() const
+uint32_t confServer::getHost() const
 {
 	return this->_server_address.sin_addr.s_addr;
 }
 
-std::string confFileParam::getRoot() const
+std::string confServer::getRoot() const
 {
 	return this->_root;
 }
 
-std::string confFileParam::getServerName() const
+std::string confServer::getServerName() const
 {
 	return this->_server_name;
 }
 
-std::string confFileParam::getIndex() const
+std::string confServer::getIndex() const
 {
 	return this->_index;
 }
 
-bool confFileParam::getAutoIndex() const
+bool confServer::getAutoIndex() const
 {
 	return this->_auto_index;
 }
 
-std::map<int,std::string> confFileParam::getErrorPages() const
+std::map<int,std::string> confServer::getErrorPages() const
 {
 	return this->_error_pages;
 }
 
-int confFileParam::getClientMaxBodySize() const
+int confServer::getClientMaxBodySize() const
 {
 	return this->_client_max_body_size;
 }
 
-std::vector<Location> confFileParam::getLocation() const
+std::vector<Location> confServer::getLocation() const
 {
 	return this->_location;
+}
+
+int confServer::getSocket() const
+{
+	return this->_socket_fd;
 }
 
 /*
@@ -128,12 +154,13 @@ std::vector<Location> confFileParam::getLocation() const
 	+-----------------+
 */
 
-std::ostream &operator<<(std::ostream &stream,confFileParam & arg)
+std::ostream &operator<<(std::ostream &stream,confServer & arg)
 {
 	stream << "Server" << std::endl;
 	stream << "Port: " << arg.getPort() << std::endl;
 	stream << "Server Name: " << arg.getServerName() << std::endl;
 	stream << "Host: " << binaryToIp(arg.getHost()) << std::endl;
+	stream << "Socket fd: " << arg.getSocket() << std::endl;
 	if(arg.getErrorPages().size() == 0)
 		stream << "Error Pages: None" << std::endl;
 	else

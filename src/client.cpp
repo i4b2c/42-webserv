@@ -1,5 +1,4 @@
-#include "client.hpp"
-#include <sys/poll.h>
+#include "webLib.hpp"
 
 Client::Client(int idx)
 : address(),client(0),idx(idx),client_size(sizeof(this->address)),buffer_size(1024)

@@ -1,5 +1,4 @@
-#include "server.hpp"
-#include <iostream>
+#include "webLib.hpp"
 
 Server::Server(int domain, int port, u_long interface, int service, int protocol)
 : address(), socket_fd()

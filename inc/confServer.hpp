@@ -1,13 +1,14 @@
-#ifndef CONFFILEPARAMS_HPP
-#define CONFFILEPARAMS_HPP
+#ifndef CONFFILESERVER_HPP
+#define CONFFILESERVER_HPP
 
 #include "webLib.hpp"
 
 class Location;
 
-class confFileParam
+class confServer
 {
 	private:
+		int							_socket_fd;
 		int							_port;
 		in_addr_t					_host;
 		std::string					_server_name;
@@ -22,8 +23,8 @@ class confFileParam
 		/*
 			Constructor and Destructor
 		*/
-		confFileParam();
-		~confFileParam();
+		confServer();
+		~confServer();
 
 		/*
 			Set functions
@@ -37,6 +38,7 @@ class confFileParam
 		void setIndex(std::string);
 		void setAutoIndex(std::string);
 		void setLocation(Location);
+		void setSocket();
 
 		/*
 			Get funtions
@@ -50,12 +52,13 @@ class confFileParam
 		std::string					getIndex() const;
 		bool						getAutoIndex() const;
 		std::vector<Location>		getLocation() const;
+		int							getSocket() const;
 };
 
 /*
 	Utils Funcions
 */
 
-std::ostream &operator<<(std::ostream &stream,confFileParam & arg);
+std::ostream &operator<<(std::ostream &stream,confServer & arg);
 
-#endif //CONFFILEPARAMS_HPP
+#endif //CONFFILESERVER_HPP

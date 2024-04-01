@@ -26,7 +26,7 @@ void webServ::configServerFile(confFile & conf_file)
 			++it;
 			if((*it).empty())
 				error("Invalid config file");
-			confFileParam conf_file_param_temp;
+			confServer conf_file_param_temp;
 			while((*it).find("}") == std::string::npos)
 			{
 				if((*it).find("listen") != std::string::npos)
@@ -99,7 +99,8 @@ void webServ::configServerFile(confFile & conf_file)
 					++it;
 				if((*it).find("}") != std::string::npos || it == itn)
 				{
-					this->confFileParams.push_back(conf_file_param_temp);
+					conf_file_param_temp.setSocket();
+					this->_conf_server.push_back(conf_file_param_temp);
 					break;
 				}
 			}
@@ -110,79 +111,21 @@ void webServ::configServerFile(confFile & conf_file)
 
 void webServ::printConfFiles()
 {
-	for(std::vector<confFileParam>::iterator it = this->confFileParams.begin(); it != this->confFileParams.end();++it)
+	for(std::vector<confServer>::iterator it = this->_conf_server.begin(); it != this->_conf_server.end();++it)
 	{
 		std::cout << *it << std::endl;
 	}
 }
 
 webServ::webServ()
-: servers(),clients(), confFileParams()
+: _servers(), _clients(), _conf_server()
 {
 	signal(SIGPIPE,SIG_IGN);
 	signal(SIGINT, closeServer);
 	printAtTerminal("Starting Server...");
 }
 
-
-// webServ::webServ()
-// : server(),client(),confFile(),params()
-// {
-// 	this->getConfFile("conf/default.conf");
-// }
-
 webServ::~webServ()
 {
 	printAtTerminal("Closing Server...");
 }
-
-// void webServ::addServer()
-// {
-// 	static int idx = 0;
-// 	Server serverTemp(AF_INET,atoi(this->params["listen"].c_str()),INADDR_ANY,SOCK_STREAM,0);
-// 	this->server.push_back(serverTemp);
-// 	this->id = idx;
-// 	idx++;
-// }
-
-// void webServ::addServer(int domain, int port, u_long interface, int service, int protocol)
-// {
-// 	Server serverTemp(domain,port,interface,service,protocol);
-// 	this->server.push_back(serverTemp);
-// }
-
-// void webServ::addClient(int idx)
-// {
-// 	Client clientTemp(idx);
-// 	this->client.push_back(clientTemp);
-// }
-
-// void webServ::starting(void)
-// {
-// 	struct pollfd pfd;
-// 	pfd.fd = this->server.at(this->id).getSocket();
-// 	pfd.events = POLLIN;
-
-// 	int idx = 0;
-// 	while (!g_closeServer)
-// 	{
-// 		int poll_ret = poll(&pfd, 1, -1);
-// 		if (poll_ret < 0)
-// 		{
-// 			return;
-// 		}
-// 		else if (poll_ret == 0)
-// 		{
-// 			continue;
-// 		}
-// 		else if (pfd.revents & POLLIN)
-// 		{
-// 			this->addClient(idx);
-// 			this->client.at(this->client.size() - 1).connect(this->server.at(this->id).getSocket());
-// 			idx++;
-// 		}
-// 		else
-// 		{
-// 		}
-// 	}
-// }
