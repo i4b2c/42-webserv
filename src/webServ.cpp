@@ -69,8 +69,35 @@ void webServ::configServerFile(confFile & conf_file)
 					cleanSpaces(*it);
 					conf_file_param_temp.setIndex((*it).substr(5,(*it).length() - 1));
 				}
-				++it;
-				if((*it).find("}") != std::string::npos)
+				else if((*it).find("location") != std::string::npos)
+				{
+					std::vector<std::string> location_path_temp = splitString(*it,' ');
+					Location location_temp;
+					/*
+						Ainda nao fiz a verificacao mas quando tiver
+						size == 2 e encontrar '{' ele tem que retornar error
+					*/
+					location_temp.setPath(location_path_temp[1]);
+					++it;
+					while((*it).find("}") == std::string::npos)
+					{
+						if((*it).find("root") != std::string::npos)
+						{
+							cleanSpaces(*it);
+							location_temp.setRoot((*it).substr(4,(*it).length() - 1));
+						}
+						if(it != itn)
+							++it;
+						if((*it).find("}") != std::string::npos || it == itn)
+						{
+							conf_file_param_temp.setLocation(location_temp);
+							break;
+						}
+					}
+				}
+				if(it != itn)
+					++it;
+				if((*it).find("}") != std::string::npos || it == itn)
 				{
 					this->confFileParams.push_back(conf_file_param_temp);
 					break;

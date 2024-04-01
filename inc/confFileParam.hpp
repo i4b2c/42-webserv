@@ -3,6 +3,8 @@
 
 #include "webLib.hpp"
 
+class Location;
+
 class confFileParam
 {
 	private:
@@ -15,10 +17,17 @@ class confFileParam
 		int							_client_max_body_size;
 		std::map<int,std::string>	_error_pages;
 		struct sockaddr_in			_server_address;
+		std::vector<Location>		_location;
 	public:
+		/*
+			Constructor and Destructor
+		*/
 		confFileParam();
 		~confFileParam();
 
+		/*
+			Set functions
+		*/
 		void setPort(int);
 		void setServerName(std::string);
 		void setHost(uint32_t);
@@ -27,16 +36,25 @@ class confFileParam
 		void setRoot(std::string);
 		void setIndex(std::string);
 		void setAutoIndex(std::string);
+		void setLocation(Location);
 
-		int getPort() const;
-		uint32_t getHost() const;
-		std::string getServerName() const;
-		std::map<int,std::string> getErrorPages() const;
-		int getClientMaxBodySize() const;
-		std::string getRoot() const;
-		std::string getIndex() const;
-		bool getAutoIndex() const;
+		/*
+			Get funtions
+		*/
+		int							getPort() const;
+		uint32_t					getHost() const;
+		std::string					getServerName() const;
+		std::map<int,std::string>	getErrorPages() const;
+		int							getClientMaxBodySize() const;
+		std::string					getRoot() const;
+		std::string					getIndex() const;
+		bool						getAutoIndex() const;
+		std::vector<Location>		getLocation() const;
 };
+
+/*
+	Utils Funcions
+*/
 
 std::ostream &operator<<(std::ostream &stream,confFileParam & arg);
 

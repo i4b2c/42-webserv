@@ -1,9 +1,21 @@
 #include "webLib.hpp"
 
+/*
+	+----------------------------+
+	| Constructor and Destructor |
+	+----------------------------+
+*/
+
 confFileParam::confFileParam()
-: _port(0),_host(0),_server_name(""),_root(""),_index(""),_auto_index(false),_client_max_body_size(0), _error_pages(),_server_address() {};
+: _port(0),_host(0),_server_name(""),_root(""),_index(""),_auto_index(false),_client_max_body_size(0), _error_pages(),_server_address(),_location() {};
 
 confFileParam::~confFileParam() {};
+
+/*
+	+---------------+
+	| Set Functions |
+	+---------------+
+*/
 
 void confFileParam::setPort(int port_temp)
 {
@@ -13,36 +25,6 @@ void confFileParam::setPort(int port_temp)
 void confFileParam::setServerName(std::string server_name_temp)
 {
 	this->_server_name = server_name_temp;
-}
-
-int confFileParam::getPort() const
-{
-	return this->_port;
-}
-
-uint32_t confFileParam::getHost() const
-{
-	return this->_server_address.sin_addr.s_addr;
-}
-
-std::string confFileParam::getRoot() const
-{
-	return this->_root;
-}
-
-std::string confFileParam::getServerName() const
-{
-	return this->_server_name;
-}
-
-std::string confFileParam::getIndex() const
-{
-	return this->_index;
-}
-
-bool confFileParam::getAutoIndex() const
-{
-	return this->_auto_index;
 }
 
 void confFileParam::setHost(uint32_t host)
@@ -84,6 +66,47 @@ void confFileParam::setClientMaxBodySize(int num)
 	this->_client_max_body_size = num;
 }
 
+void confFileParam::setLocation(Location location_temp)
+{
+	this->_location.push_back(location_temp);
+}
+
+/*
+	+---------------+
+	| Get Functions |
+	+---------------+
+*/
+
+int confFileParam::getPort() const
+{
+	return this->_port;
+}
+
+uint32_t confFileParam::getHost() const
+{
+	return this->_server_address.sin_addr.s_addr;
+}
+
+std::string confFileParam::getRoot() const
+{
+	return this->_root;
+}
+
+std::string confFileParam::getServerName() const
+{
+	return this->_server_name;
+}
+
+std::string confFileParam::getIndex() const
+{
+	return this->_index;
+}
+
+bool confFileParam::getAutoIndex() const
+{
+	return this->_auto_index;
+}
+
 std::map<int,std::string> confFileParam::getErrorPages() const
 {
 	return this->_error_pages;
@@ -93,6 +116,17 @@ int confFileParam::getClientMaxBodySize() const
 {
 	return this->_client_max_body_size;
 }
+
+std::vector<Location> confFileParam::getLocation() const
+{
+	return this->_location;
+}
+
+/*
+	+-----------------+
+	| Utils Functions |	
+	+-----------------+
+*/
 
 std::ostream &operator<<(std::ostream &stream,confFileParam & arg)
 {
@@ -120,5 +154,22 @@ std::ostream &operator<<(std::ostream &stream,confFileParam & arg)
 		stream << "Auto Index: off" << std::endl;
 	stream << "Root: " << arg.getRoot() << std::endl;
 	stream << "Client Max Body Size: " << arg.getClientMaxBodySize() << std::endl;
+	if(arg.getLocation().size() == 0)
+		stream << "Location: None" << std::endl;
+	else
+	{
+		std::vector<Location>::iterator it,itn;
+		std::vector<Location> temp = arg.getLocation();
+		it = temp.begin();
+		itn = temp.end();
+		while(it != itn)
+		{
+			stream << std::endl;
+			stream << "Location " << (*it).getPath() << std::endl;
+			stream << "Root: " << (*it).getRoot() << std::endl;
+			stream << std::endl;
+			++it;
+		}
+	}
 	return stream;
 }

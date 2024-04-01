@@ -31,5 +31,6 @@
 #include "confFile.hpp"
 #include "confFileParam.hpp"
 #include "utils.hpp"
+#include "location.hpp"
 
 #endif //WEBLIB_HPP
