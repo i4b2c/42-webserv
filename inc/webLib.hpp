@@ -12,6 +12,7 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <exception>
 
 /*
 	c headers

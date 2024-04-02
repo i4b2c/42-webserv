@@ -24,6 +24,21 @@ class webServ
 		// void starting(void);
 		void configServerFile(confFile & arg);
 		void printConfFiles();
+		
+		/*
+			Exception function
+		*/
+		class ErrorException: public std::exception
+		{
+			private:
+				std::string _mensage;
+			public:
+				ErrorException(std::string) throw();
+				virtual ~ErrorException() throw();
+				const char * what() const throw();
+		};
+
+
 };
 
 #endif //WEBSERV_HPP

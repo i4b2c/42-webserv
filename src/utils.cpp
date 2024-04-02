@@ -94,3 +94,28 @@ std::vector<std::string> splitString(const std::string& input, char delimiter)
 
     return buffer;
 }
+
+/*
+	CheckOnlySpaces
+	created to check if in the string there is only spaces os tabs
+*/
+bool checkOnlySpaces(std::string arg)
+{
+	if(arg.size() == 0)
+		return true;
+	for(std::string::iterator it = arg.begin(); it != arg.end(); ++it)
+	{
+		if(*it != ' ' && *it != '\t')
+			return false;
+	}
+	return true;
+}
+
+bool checkToken(std::string const arg)
+{
+	if(arg.size() == 0)
+		return true;
+	else if(arg.find(";") == std::string::npos)
+		return false;
+	return true;
+}
