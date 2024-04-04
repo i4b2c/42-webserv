@@ -53,6 +53,16 @@ class confServer
 		bool						getAutoIndex() const;
 		std::vector<Location>		getLocation() const;
 		int							getSocket() const;
+
+		class ErrorException: public std::exception
+		{
+			private:
+				std::string _mensage;
+			public:
+				ErrorException(std::string) throw();
+				virtual ~ErrorException() throw();
+				const char * what() const throw();
+		};
 };
 
 /*

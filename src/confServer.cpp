@@ -15,6 +15,12 @@ confServer::~confServer()
 		close(this->_socket_fd);
 }
 
+confServer::ErrorException::ErrorException(std::string mensage_temp) throw()
+: _mensage(mensage_temp)
+{}
+
+confServer::ErrorException::~ErrorException() throw() {};
+
 /*
 	+---------------+
 	| Set Functions |
@@ -77,19 +83,15 @@ void confServer::setLocation(Location location_temp)
 void confServer::setSocket()
 {
 	if((this->_socket_fd = socket(AF_INET,SOCK_STREAM,0)) == -1)
-	{
-		exit(EXIT_FAILURE);
-	}
+		throw confServer::ErrorException("Error: cannot create socket");
 	int option_value = 0;
 	setsockopt(this->_socket_fd,SOL_SOCKET,SO_REUSEADDR,&option_value,sizeof(int));
 	memset(&this->_server_address,0,sizeof(this->_server_address));
 	this->_server_address.sin_family = AF_INET;
 	this->_server_address.sin_port = htons(this->_port);
 	this->_server_address.sin_addr.s_addr = this->_host;
-	// if(bind(this->_socket_fd,(struct sockaddr *) &(this->_server_address),sizeof(this->_server_address)) == -1)
-	// {
-	// 	exit(EXIT_FAILURE);
-	// }
+	if(bind(this->_socket_fd,(struct sockaddr *) &(this->_server_address),sizeof(this->_server_address)) == -1)
+		throw confServer::ErrorException("Error: cannot bind socket");
 }
 
 /*
@@ -199,4 +201,13 @@ std::ostream &operator<<(std::ostream &stream,confServer & arg)
 		}
 	}
 	return stream;
+}
+
+/*
+	Error Exception
+*/
+
+const char * confServer::ErrorException::what() const throw()
+{
+	return this->_mensage.c_str();
 }
