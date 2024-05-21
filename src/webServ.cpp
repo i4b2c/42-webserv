@@ -138,6 +138,18 @@ void webServ::configServerFile(confFile & conf_file)
 							cleanSpaces(*it);
 							location_temp.setRoot((*it).substr(4,(*it).length() - 1));
 						}
+						else if((*it).find("autoindex") != std::string::npos)
+						{
+							if(!checkToken(*it))
+								throw webServ::ErrorException("Error: Missing ';' on root inside the auto index");
+							cleanSpaces(*it);
+							if((*it).find("false") != std::string::npos && (*it).size() == 14)
+								location_temp.setAutoIndex(false);
+							else if((*it).find("true") != std::string::npos && (*it).size() == 13)
+								location_temp.setAutoIndex(true);
+							else
+								throw webServ::ErrorException("Error: Invalid type of auto index");
+						}
 						if(it != itn)
 							++it;
 						if((*it).find("}") != std::string::npos || it == itn)
