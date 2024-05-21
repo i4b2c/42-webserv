@@ -170,8 +170,6 @@ struct sockaddr_in confServer::getAddress()
 
 std::ostream &operator<<(std::ostream &stream,confServer & arg)
 {
-	const struct sockaddr_in address = arg.getAddress();
-	stream << "teste:" << &address << std::endl;
 	stream << "Server" << std::endl;
 	stream << "Port: " << arg.getPort() << std::endl;
 	stream << "Server Name: " << arg.getServerName() << std::endl;
@@ -207,10 +205,7 @@ std::ostream &operator<<(std::ostream &stream,confServer & arg)
 		itn = temp.end();
 		while(it != itn)
 		{
-			stream << std::endl;
-			stream << "Location " << (*it).getPath() << std::endl;
-			stream << "Root: " << (*it).getRoot() << std::endl;
-			stream << std::endl;
+			stream << *it << std::endl;
 			++it;
 		}
 	}

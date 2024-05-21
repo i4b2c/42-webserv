@@ -42,3 +42,13 @@ std::string Location::getRoot() const
 {
 	return this->_root;
 }
+
+// EXTRA
+
+std::ostream &operator<<(std::ostream &stream, Location & arg)
+{
+	stream << "Location " << arg.getPath() << std::endl;
+	stream << "Root: " << arg.getRoot() << std::endl;
+	stream << std::endl;
+	return stream;
+}

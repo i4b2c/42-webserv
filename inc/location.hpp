@@ -17,4 +17,6 @@ class Location
 		std::string getRoot() const;
 };
 
+std::ostream &operator<<(std::ostream &stream, Location & arg);
+
 #endif//LOCATION_HPP
