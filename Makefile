@@ -80,6 +80,11 @@ fclean: clean
 	@$(RM) -rf $(OBJ_DIR)
 	@echo $(VERMELHO)"Removendo executavel     webserv"$(BRANCO) "  [" $(VERDE)"✔"$(BRANCO) "]" $(RESETAR)
 
+gdb: $(OBJS)
+	@$(CXX) $(MAIN) $(OBJS) $(CXXFLAGS) -g $(OUTPUT) $(NAME)_gdb
+	@echo $(VERDE)"Criando executavel gdb\t webserv" $(BRANCO) "\t[" $(VERDE)"✔"$(BRANCO) "]" $(RESETAR)
+
+
 re: fclean all
 
 git:

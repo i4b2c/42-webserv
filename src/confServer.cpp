@@ -82,17 +82,23 @@ void confServer::setLocation(Location location_temp)
 
 void confServer::setSocket()
 {
-	if((this->_socket_fd = socket(AF_INET,SOCK_STREAM,0)) == -1)
-		throw confServer::ErrorException("Error: cannot create socket");
-	int option_value = 0;
-	setsockopt(this->_socket_fd,SOL_SOCKET,SO_REUSEADDR,&option_value,sizeof(int));
-	memset(&this->_server_address,0,sizeof(this->_server_address));
-	this->_server_address.sin_family = AF_INET;
-	this->_server_address.sin_port = htons(this->_port);
-	this->_server_address.sin_addr.s_addr = this->_host;
-	if(bind(this->_socket_fd,(struct sockaddr *) &(this->_server_address),sizeof(this->_server_address)) == -1)
-		throw confServer::ErrorException("Error: cannot bind socket");
+    _server_address = new struct sockaddr_in;
+    if((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+        throw confServer::ErrorException("Error: cannot create socket");
+
+    int option_value = 1; // Ajuste o valor para 1 para reutilizar o endereço
+    if(setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value)) == -1)
+        throw confServer::ErrorException("Error: setsockopt failed");
+
+    memset(_server_address, 0, sizeof(struct sockaddr_in));
+    _server_address->sin_family = AF_INET;
+    _server_address->sin_port = htons(_port);
+    _server_address->sin_addr.s_addr = this->_host; // Supondo que _host é uma string
+
+    if(bind(_socket_fd, (struct sockaddr *)_server_address, sizeof(struct sockaddr_in)) == -1)
+        throw confServer::ErrorException("Error: cannot bind socket");
 }
+
 
 /*
 	+---------------+
@@ -107,7 +113,7 @@ int confServer::getPort() const
 
 uint32_t confServer::getHost() const
 {
-	return this->_server_address.sin_addr.s_addr;
+	return this->_server_address->sin_addr.s_addr;
 }
 
 std::string confServer::getRoot() const
@@ -150,14 +156,22 @@ int confServer::getSocket() const
 	return this->_socket_fd;
 }
 
+struct sockaddr_in confServer::getAddress() 
+{
+	return *this->_server_address;
+}
 /*
 	+-----------------+
 	| Utils Functions |	
 	+-----------------+
 */
 
+
+
 std::ostream &operator<<(std::ostream &stream,confServer & arg)
 {
+	const struct sockaddr_in address = arg.getAddress();
+	stream << "teste:" << &address << std::endl;
 	stream << "Server" << std::endl;
 	stream << "Port: " << arg.getPort() << std::endl;
 	stream << "Server Name: " << arg.getServerName() << std::endl;

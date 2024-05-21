@@ -33,7 +33,7 @@ void Server::testConnection(int fd)
 {
 	if(fd < 0)
 	{
-		perror("Error");
+		perror("Error:");
 		exit(EXIT_FAILURE);
 	}
 }

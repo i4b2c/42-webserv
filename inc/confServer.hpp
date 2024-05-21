@@ -17,7 +17,7 @@ class confServer
 		bool						_auto_index;
 		int							_client_max_body_size;
 		std::map<int,std::string>	_error_pages;
-		struct sockaddr_in			_server_address;
+		struct sockaddr_in *			_server_address;
 		std::vector<Location>		_location;
 	public:
 		/*
@@ -53,6 +53,7 @@ class confServer
 		bool						getAutoIndex() const;
 		std::vector<Location>		getLocation() const;
 		int							getSocket() const;
+		struct sockaddr_in getAddress();
 
 		class ErrorException: public std::exception
 		{
