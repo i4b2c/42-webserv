@@ -80,14 +80,14 @@ void confServer::setLocation(Location location_temp)
 	this->_location.push_back(location_temp);
 }
 
+/* Setting up socket and binding */
 void confServer::setSocket()
 {
-    // _server_address = new struct sockaddr_in;
-    if((_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if((this->_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         throw confServer::ErrorException("Error: cannot create socket");
 
     int option_value = 1; // Ajuste o valor para 1 para reutilizar o endereço
-    if(setsockopt(_socket_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value)) == -1)
+    if(setsockopt(this->_socket_fd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(option_value)) == -1)
         throw confServer::ErrorException("Error: setsockopt failed");
 
     memset(&this->_server_address, 0, sizeof(struct sockaddr_in));
